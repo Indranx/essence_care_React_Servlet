@@ -1,0 +1,10 @@
+com\essencecare\models\Product.class
+com\essencecare\models\User.class
+com\essencecare\servlets\HelloWorldServlet.class
+com\essencecare\filters\CORSFilter.class
+com\essencecare\servlets\CartServlet.class
+com\essencecare\servlets\ProductServlet.class
+com\essencecare\servlets\UserServlet.class
+com\essencecare\servlets\TestServlet.class
+com\essencecare\utils\CORSFilter.class
+com\essencecare\models\CartItem.class
