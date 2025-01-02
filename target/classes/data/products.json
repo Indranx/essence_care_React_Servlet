@@ -1,0 +1,37 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Natural Face Cream",
+      "price": 139.9,
+      "category": "skincare",
+      "imageUrl": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&auto=format&fit=crop",
+      "description": "A gentle, natural face cream for daily use. This luxurious cream provides deep hydration and nourishment for all skin types.",
+      "ingredients": ["Aloe Vera", "Jojoba Oil", "Vitamin E", "Shea Butter"],
+      "benefits": [
+        "Deep hydration",
+        "Improves skin texture",
+        "Reduces fine lines",
+        "Non-greasy formula"
+      ],
+      "usage": "Apply a small amount to clean face and neck, morning and evening.",
+      "stock": 15
+    },
+    {
+      "id": 2,
+      "name": "Hydrating Body Lotion",
+      "price": 119.9,
+      "category": "bodycare",
+      "imageUrl": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop",
+      "description": "Rich, moisturizing body lotion with natural ingredients.",
+      "ingredients": ["Shea Butter", "Coconut Oil", "Almond Oil", "Vitamin E"],
+      "benefits": [
+        "24-hour hydration",
+        "Improves skin elasticity",
+        "Non-sticky formula"
+      ],
+      "usage": "Apply generously to clean skin after bathing.",
+      "stock": 20
+    }
+  ]
+}

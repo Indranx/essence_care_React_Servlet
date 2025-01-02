@@ -2,6 +2,7 @@ package com.essencecare.servlets;
 
 import com.google.gson.Gson;
 import com.essencecare.models.User;
+import com.essencecare.utils.JsonDataManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,22 +10,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UserServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-    private final Map<String, User> users = new HashMap<>();
+    private static final Gson gson = new Gson();
+    private static List<User> users;
 
     @Override
     public void init() throws ServletException {
-        // Add a sample user
-        User sampleUser = new User();
-        sampleUser.setEmail("test@example.com");
-        sampleUser.setPassword("test123");
-        sampleUser.setFullName("Test User");
-        sampleUser.setAddress("123 Test St");
-        users.put(sampleUser.getEmail(), sampleUser);
+        super.init();
+        JsonDataManager.setServletContext(getServletContext());
+        users = JsonDataManager.loadUsers();
     }
 
     @Override
@@ -65,10 +63,14 @@ public class UserServlet extends HttpServlet {
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User credentials = gson.fromJson(request.getReader(), User.class);
-        User user = users.get(credentials.getEmail());
         PrintWriter out = response.getWriter();
 
-        if (user != null && user.getPassword().equals(credentials.getPassword())) {
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getEmail().equals(credentials.getEmail()))
+                .findFirst();
+
+        if (userOpt.isPresent() && userOpt.get().getPassword().equals(credentials.getPassword())) {
+            User user = userOpt.get();
             // Invalidate any existing session
             HttpSession existingSession = request.getSession(false);
             if (existingSession != null) {
@@ -80,13 +82,13 @@ public class UserServlet extends HttpServlet {
             session.setAttribute("user", user.getEmail());
             session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
-            // Create a response object without the password
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("email", user.getEmail());
-            responseData.put("fullName", user.getFullName());
-            responseData.put("address", user.getAddress());
+            // Create a response object without sensitive data
+            User safeUser = new User();
+            safeUser.setEmail(user.getEmail());
+            safeUser.setFullName(user.getFullName());
+            safeUser.setAddress(user.getAddress());
 
-            out.print(gson.toJson(responseData));
+            out.print(gson.toJson(safeUser));
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print(gson.toJson("Invalid credentials"));
@@ -97,13 +99,15 @@ public class UserServlet extends HttpServlet {
         User newUser = gson.fromJson(request.getReader(), User.class);
         PrintWriter out = response.getWriter();
 
-        if (users.containsKey(newUser.getEmail())) {
+        if (users.stream().anyMatch(u -> u.getEmail().equals(newUser.getEmail()))) {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
             out.print(gson.toJson("Email already exists"));
             return;
         }
 
-        users.put(newUser.getEmail(), newUser);
+        // Add the new user
+        users.add(newUser);
+        JsonDataManager.saveUsers(users);
 
         // Create new session
         HttpSession session = request.getSession(true);
@@ -112,13 +116,13 @@ public class UserServlet extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_CREATED);
 
-        // Create a response object without the password
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("email", newUser.getEmail());
-        responseData.put("fullName", newUser.getFullName());
-        responseData.put("address", newUser.getAddress());
+        // Create a response object without sensitive data
+        User safeUser = new User();
+        safeUser.setEmail(newUser.getEmail());
+        safeUser.setFullName(newUser.getFullName());
+        safeUser.setAddress(newUser.getAddress());
 
-        out.print(gson.toJson(responseData));
+        out.print(gson.toJson(safeUser));
     }
 
     private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -129,8 +133,6 @@ public class UserServlet extends HttpServlet {
             session.invalidate();
         }
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("message", "Successfully logged out");
-        out.print(gson.toJson(responseData));
+        out.print(gson.toJson(Map.of("message", "Successfully logged out")));
     }
 } 
