@@ -3,82 +3,82 @@
     {
       "id": 1,
       "name": "Vitamin C Serum",
-      "description": "Brightening and antioxidant serum for radiant skin",
-      "price": 29.99,
-      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop",
-      "category": "Skincare"
+      "description": "A powerful antioxidant serum that helps brighten skin and reduce signs of aging.",
+      "price": 159.9,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1723951174326-2a97221d3b7f?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 2,
       "name": "Hyaluronic Acid Moisturizer",
-      "description": "Deep hydrating moisturizer for all skin types",
-      "price": 34.99,
-      "image": "https://images.unsplash.com/photo-1556229162-5c63ed9c4efb?w=800&auto=format&fit=crop",
-      "category": "Skincare"
+      "description": "Deeply hydrating moisturizer that plumps and softens skin.",
+      "price": 129.9,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1600180583258-6d9b0c7b782b?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 3,
       "name": "Argan Oil Hair Serum",
-      "description": "Nourishing hair serum for smooth and shiny hair",
-      "price": 45.99,
-      "image": "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=800&auto=format&fit=crop",
-      "category": "Haircare"
+      "description": "Nourishing hair serum that adds shine and reduces frizz.",
+      "price": 89.9,
+      "category": "haircare",
+      "image": "https://images.unsplash.com/photo-1667242003572-96caaf8ac5c4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 4,
       "name": "Niacinamide Serum",
-      "description": "Pore-minimizing and oil control serum",
-      "price": 27.99,
-      "image": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&auto=format&fit=crop",
-      "category": "Skincare"
+      "description": "Balancing serum that helps control oil and minimize pores.",
+      "price": 119.9,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1703335093128-2989445b88fa?q=80&w=1854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 5,
       "name": "Body Butter",
-      "description": "Rich and creamy body moisturizer",
-      "price": 24.99,
-      "image": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=800&auto=format&fit=crop",
-      "category": "Bodycare"
+      "description": "Rich and creamy body moisturizer for deep hydration.",
+      "price": 79.9,
+      "category": "bodycare",
+      "image": "https://images.unsplash.com/photo-1703174323653-0455deaf7f11?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 6,
       "name": "Rose Water Toner",
-      "description": "Calming and hydrating facial toner with natural rose water",
-      "price": 22.99,
-      "image": "https://images.unsplash.com/photo-1601049541332-54de13ab3ff2?w=800&auto=format&fit=crop",
-      "category": "Skincare"
+      "description": "Gentle, alcohol-free toner that soothes and refreshes skin.",
+      "price": 89.9,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1626897844971-aef92643f056?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 7,
       "name": "Keratin Hair Mask",
-      "description": "Deep conditioning treatment for damaged hair",
-      "price": 19.99,
-      "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=800&auto=format&fit=crop",
-      "category": "Haircare"
+      "description": "Intensive treatment that strengthens and repairs damaged hair.",
+      "price": 109.9,
+      "category": "haircare",
+      "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=2056&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 8,
       "name": "Body Scrub",
-      "description": "Exfoliating scrub with natural ingredients",
-      "price": 18.99,
-      "image": "https://images.unsplash.com/photo-1601049541965-9e49193c7f66?w=800&auto=format&fit=crop",
-      "category": "Bodycare"
+      "description": "Exfoliating scrub that smooths and brightens skin.",
+      "price": 69.9,
+      "category": "bodycare",
+      "image": "https://images.unsplash.com/photo-1677769237703-629d082d89bb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 9,
       "name": "Biotin Shampoo",
-      "description": "Strengthening shampoo for healthy hair growth",
-      "price": 32.99,
-      "image": "https://images.unsplash.com/photo-1620916573432-42bb7aa4ff9e?w=800&auto=format&fit=crop",
-      "category": "Haircare"
+      "description": "Strengthening shampoo that promotes healthy hair growth.",
+      "price": 99.9,
+      "category": "haircare",
+      "image": "https://images.unsplash.com/photo-1593560368921-9b9fd9e5841f?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
       "id": 10,
       "name": "Hand Cream",
-      "description": "Nourishing hand cream with shea butter",
-      "price": 25.99,
-      "image": "https://images.unsplash.com/photo-1601049541844-aba2c9c0517e?w=800&auto=format&fit=crop",
-      "category": "Bodycare"
+      "description": "Nourishing hand cream that protects and moisturizes.",
+      "price": 69.9,
+      "category": "bodycare",
+      "image": "https://images.unsplash.com/photo-1556229162-5c63ed9c4efb?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     }
   ]
 }
