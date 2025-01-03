@@ -5,6 +5,7 @@ import com.essencecare.models.Order;
 import com.essencecare.models.CartItem;
 import com.essencecare.utils.JsonDataManager;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,22 +13,18 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import com.google.gson.reflect.TypeToken;
 
+@WebServlet("/essence-care/api/orders/*")
 public class OrderServlet extends HttpServlet {
     private static final Gson gson = new Gson();
-    private static List<Order> orders = new ArrayList<>();
-    private static long nextOrderId = 1;
+    private List<Order> orders;
+    private long nextOrderId = 1;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        orders = JsonDataManager.loadOrders();
-        if (!orders.isEmpty()) {
-            nextOrderId = orders.stream()
-                    .mapToLong(Order::getId)
-                    .max()
-                    .getAsLong() + 1;
-        }
+        loadOrders();
     }
 
     @Override
@@ -71,7 +68,7 @@ public class OrderServlet extends HttpServlet {
         
         try {
             // Get cart items from CartServlet
-            List<CartItem> cartItems = CartServlet.getUserCart(userEmail);
+            List<CartItem> cartItems = CartServlet.getInstance().getUserCart(userEmail);
             if (cartItems == null || cartItems.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print(gson.toJson("Cart is empty"));
@@ -93,15 +90,15 @@ public class OrderServlet extends HttpServlet {
             order.setOrderDate(new Date());
 
             // Add shipping address from request
-            Map<String, String> requestData = gson.fromJson(request.getReader(), Map.class);
+            Map<String, String> requestData = gson.fromJson(request.getReader(), new TypeToken<Map<String, String>>(){}.getType());
             order.setShippingAddress(requestData.get("shippingAddress"));
 
             // Save order
             orders.add(order);
-            JsonDataManager.saveOrders(orders);
+            saveOrders(orders);
 
             // Clear the cart
-            CartServlet.clearUserCart(userEmail);
+            CartServlet.getInstance().clearUserCart(userEmail);
 
             out.print(gson.toJson(order));
         } catch (Exception e) {
@@ -109,5 +106,19 @@ public class OrderServlet extends HttpServlet {
             out.print(gson.toJson("Error creating order: " + e.getMessage()));
         }
         out.flush();
+    }
+
+    private void loadOrders() {
+        orders = JsonDataManager.loadOrders();
+        if (!orders.isEmpty()) {
+            nextOrderId = orders.stream()
+                    .mapToLong(Order::getId)
+                    .max()
+                    .getAsLong() + 1;
+        }
+    }
+
+    private void saveOrders(List<Order> orders) {
+        JsonDataManager.saveOrders(orders);
     }
 } 

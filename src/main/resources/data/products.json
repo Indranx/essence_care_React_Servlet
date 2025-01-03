@@ -2,36 +2,83 @@
   "products": [
     {
       "id": 1,
-      "name": "Natural Face Cream",
-      "price": 139.9,
-      "category": "skincare",
-      "imageUrl": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&auto=format&fit=crop",
-      "description": "A gentle, natural face cream for daily use. This luxurious cream provides deep hydration and nourishment for all skin types.",
-      "ingredients": ["Aloe Vera", "Jojoba Oil", "Vitamin E", "Shea Butter"],
-      "benefits": [
-        "Deep hydration",
-        "Improves skin texture",
-        "Reduces fine lines",
-        "Non-greasy formula"
-      ],
-      "usage": "Apply a small amount to clean face and neck, morning and evening.",
-      "stock": 15
+      "name": "Vitamin C Serum",
+      "description": "Brightening and antioxidant serum for radiant skin",
+      "price": 29.99,
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop",
+      "category": "Skincare"
     },
     {
       "id": 2,
-      "name": "Hydrating Body Lotion",
-      "price": 119.9,
-      "category": "bodycare",
-      "imageUrl": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop",
-      "description": "Rich, moisturizing body lotion with natural ingredients.",
-      "ingredients": ["Shea Butter", "Coconut Oil", "Almond Oil", "Vitamin E"],
-      "benefits": [
-        "24-hour hydration",
-        "Improves skin elasticity",
-        "Non-sticky formula"
-      ],
-      "usage": "Apply generously to clean skin after bathing.",
-      "stock": 20
+      "name": "Hyaluronic Acid Moisturizer",
+      "description": "Deep hydrating moisturizer for all skin types",
+      "price": 34.99,
+      "image": "https://images.unsplash.com/photo-1556229162-5c63ed9c4efb?w=800&auto=format&fit=crop",
+      "category": "Skincare"
+    },
+    {
+      "id": 3,
+      "name": "Argan Oil Hair Serum",
+      "description": "Nourishing hair serum for smooth and shiny hair",
+      "price": 45.99,
+      "image": "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=800&auto=format&fit=crop",
+      "category": "Haircare"
+    },
+    {
+      "id": 4,
+      "name": "Niacinamide Serum",
+      "description": "Pore-minimizing and oil control serum",
+      "price": 27.99,
+      "image": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&auto=format&fit=crop",
+      "category": "Skincare"
+    },
+    {
+      "id": 5,
+      "name": "Body Butter",
+      "description": "Rich and creamy body moisturizer",
+      "price": 24.99,
+      "image": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=800&auto=format&fit=crop",
+      "category": "Bodycare"
+    },
+    {
+      "id": 6,
+      "name": "Rose Water Toner",
+      "description": "Calming and hydrating facial toner with natural rose water",
+      "price": 22.99,
+      "image": "https://images.unsplash.com/photo-1601049541332-54de13ab3ff2?w=800&auto=format&fit=crop",
+      "category": "Skincare"
+    },
+    {
+      "id": 7,
+      "name": "Keratin Hair Mask",
+      "description": "Deep conditioning treatment for damaged hair",
+      "price": 19.99,
+      "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=800&auto=format&fit=crop",
+      "category": "Haircare"
+    },
+    {
+      "id": 8,
+      "name": "Body Scrub",
+      "description": "Exfoliating scrub with natural ingredients",
+      "price": 18.99,
+      "image": "https://images.unsplash.com/photo-1601049541965-9e49193c7f66?w=800&auto=format&fit=crop",
+      "category": "Bodycare"
+    },
+    {
+      "id": 9,
+      "name": "Biotin Shampoo",
+      "description": "Strengthening shampoo for healthy hair growth",
+      "price": 32.99,
+      "image": "https://images.unsplash.com/photo-1620916573432-42bb7aa4ff9e?w=800&auto=format&fit=crop",
+      "category": "Haircare"
+    },
+    {
+      "id": 10,
+      "name": "Hand Cream",
+      "description": "Nourishing hand cream with shea butter",
+      "price": 25.99,
+      "image": "https://images.unsplash.com/photo-1601049541844-aba2c9c0517e?w=800&auto=format&fit=crop",
+      "category": "Bodycare"
     }
   ]
 }

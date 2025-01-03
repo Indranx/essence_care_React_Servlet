@@ -1,12 +1,3 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "username": "test_user",
-      "email": "test@example.com",
-      "password": "hashed_password_here",
-      "fullName": "Test User",
-      "address": "123 Test St"
-    }
-  ]
+  "users": []
 }

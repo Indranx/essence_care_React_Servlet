@@ -4,108 +4,148 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.essencecare.models.Product;
 import com.essencecare.models.User;
+import com.essencecare.models.Order;
+import jakarta.servlet.ServletContext;
+
 import java.io.*;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JsonDataManager {
     private static final Gson gson = new Gson();
-    private static final String RESOURCE_PATH = "/data/";
-    private static final String DATA_DIR = "data";
-    
-    static {
-        // Create data directory if it doesn't exist
-        try {
-            Files.createDirectories(Paths.get(DATA_DIR));
-            System.out.println("Data directory created/exists at: " + new File(DATA_DIR).getAbsolutePath());
-            
-            // Copy initial data files from resources if they don't exist
-            copyInitialDataIfNeeded("users.json");
-            copyInitialDataIfNeeded("products.json");
-            copyInitialDataIfNeeded("cart.json");
-        } catch (IOException e) {
-            System.err.println("Failed to create data directory: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+    private static ServletContext servletContext;
 
-    private static void copyInitialDataIfNeeded(String filename) {
-        File targetFile = new File(DATA_DIR, filename);
-        if (!targetFile.exists()) {
-            try (InputStream is = JsonDataManager.class.getResourceAsStream(RESOURCE_PATH + filename)) {
-                if (is != null) {
-                    Files.copy(is, targetFile.toPath());
-                    System.out.println("Copied initial " + filename + " to: " + targetFile.getAbsolutePath());
-                }
-            } catch (IOException e) {
-                System.err.println("Failed to copy initial " + filename + ": " + e.getMessage());
-            }
-        }
-    }
-
-    private static String getDataFilePath(String filename) {
-        return DATA_DIR + File.separator + filename;
+    public static void setServletContext(ServletContext context) {
+        System.out.println("JsonDataManager: Setting ServletContext");
+        servletContext = context;
     }
 
     public static List<Product> loadProducts() {
-        String filePath = getDataFilePath("products.json");
-        System.out.println("Loading products from: " + filePath);
-        try (Reader reader = new FileReader(filePath)) {
-            Type type = new TypeToken<Map<String, List<Product>>>(){}.getType();
-            Map<String, List<Product>> data = gson.fromJson(reader, type);
-            List<Product> productList = data.get("products");
-            System.out.println("Loaded " + (productList != null ? productList.size() : 0) + " products");
-            return productList != null ? productList : new ArrayList<>();
+        System.out.println("JsonDataManager: Loading products");
+        try {
+            String filePath = "/WEB-INF/classes/data/products.json";
+            System.out.println("JsonDataManager: Reading from file: " + filePath);
+            
+            if (servletContext == null) {
+                System.out.println("JsonDataManager: ServletContext is null!");
+                return new ArrayList<>();
+            }
+
+            InputStream is = servletContext.getResourceAsStream(filePath);
+            if (is == null) {
+                System.out.println("JsonDataManager: Could not find products.json!");
+                return new ArrayList<>();
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                Type productListType = new TypeToken<ProductList>(){}.getType();
+                ProductList productList = gson.fromJson(reader, productListType);
+                System.out.println("JsonDataManager: Successfully loaded products: " + 
+                    (productList != null && productList.products != null ? productList.products.size() : 0));
+                return productList != null ? productList.products : new ArrayList<>();
+            }
         } catch (Exception e) {
-            System.out.println("Error loading products: " + e.getMessage());
+            System.out.println("JsonDataManager: Error loading products - " + e.getMessage());
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
+    private static class ProductList {
+        List<Product> products;
+    }
+
     public static List<User> loadUsers() {
-        String filePath = getDataFilePath("users.json");
-        System.out.println("Loading users from: " + filePath);
-        try (Reader reader = new FileReader(filePath)) {
-            Type type = new TypeToken<Map<String, List<User>>>(){}.getType();
-            Map<String, List<User>> data = gson.fromJson(reader, type);
-            List<User> userList = data.get("users");
-            System.out.println("Loaded " + (userList != null ? userList.size() : 0) + " users");
-            return userList != null ? userList : new ArrayList<>();
+        System.out.println("JsonDataManager: Loading users");
+        try {
+            String filePath = "/WEB-INF/classes/data/users.json";
+            System.out.println("JsonDataManager: Reading from file: " + filePath);
+            
+            if (servletContext == null) {
+                System.out.println("JsonDataManager: ServletContext is null!");
+                return new ArrayList<>();
+            }
+
+            InputStream is = servletContext.getResourceAsStream(filePath);
+            if (is == null) {
+                System.out.println("JsonDataManager: Could not find users.json!");
+                return new ArrayList<>();
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                Type userListType = new TypeToken<List<User>>(){}.getType();
+                List<User> users = gson.fromJson(reader, userListType);
+                System.out.println("JsonDataManager: Successfully loaded users: " + 
+                    (users != null ? users.size() : 0));
+                return users != null ? users : new ArrayList<>();
+            }
         } catch (Exception e) {
-            System.out.println("Error loading users: " + e.getMessage());
+            System.out.println("JsonDataManager: Error loading users - " + e.getMessage());
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
     public static void saveUsers(List<User> users) {
-        String filePath = getDataFilePath("users.json");
-        System.out.println("Saving " + users.size() + " users to: " + filePath);
-        try (Writer writer = new FileWriter(filePath)) {
-            Map<String, List<User>> data = Map.of("users", users);
-            gson.toJson(data, writer);
-            System.out.println("Successfully saved users");
+        System.out.println("JsonDataManager: Saving users");
+        try {
+            String filePath = servletContext.getRealPath("/WEB-INF/classes/data/users.json");
+            System.out.println("JsonDataManager: Writing to file: " + filePath);
+            
+            try (FileWriter writer = new FileWriter(filePath)) {
+                gson.toJson(users, writer);
+                System.out.println("JsonDataManager: Successfully saved users");
+            }
         } catch (Exception e) {
-            System.out.println("Error saving users: " + e.getMessage());
+            System.out.println("JsonDataManager: Error saving users - " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public static void saveProducts(List<Product> products) {
-        String filePath = getDataFilePath("products.json");
-        System.out.println("Saving " + products.size() + " products to: " + filePath);
-        try (Writer writer = new FileWriter(filePath)) {
-            Map<String, List<Product>> data = Map.of("products", products);
-            gson.toJson(data, writer);
-            System.out.println("Successfully saved products");
+    public static List<Order> loadOrders() {
+        System.out.println("JsonDataManager: Loading orders");
+        try {
+            String filePath = "/WEB-INF/classes/data/orders.json";
+            System.out.println("JsonDataManager: Reading from file: " + filePath);
+            
+            if (servletContext == null) {
+                System.out.println("JsonDataManager: ServletContext is null!");
+                return new ArrayList<>();
+            }
+
+            InputStream is = servletContext.getResourceAsStream(filePath);
+            if (is == null) {
+                System.out.println("JsonDataManager: Could not find orders.json!");
+                return new ArrayList<>();
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                Type orderListType = new TypeToken<List<Order>>(){}.getType();
+                List<Order> orders = gson.fromJson(reader, orderListType);
+                System.out.println("JsonDataManager: Successfully loaded orders: " + 
+                    (orders != null ? orders.size() : 0));
+                return orders != null ? orders : new ArrayList<>();
+            }
         } catch (Exception e) {
-            System.out.println("Error saving products: " + e.getMessage());
+            System.out.println("JsonDataManager: Error loading orders - " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public static void saveOrders(List<Order> orders) {
+        System.out.println("JsonDataManager: Saving orders");
+        try {
+            String filePath = servletContext.getRealPath("/WEB-INF/classes/data/orders.json");
+            System.out.println("JsonDataManager: Writing to file: " + filePath);
+            
+            try (FileWriter writer = new FileWriter(filePath)) {
+                gson.toJson(orders, writer);
+                System.out.println("JsonDataManager: Successfully saved orders");
+            }
+        } catch (Exception e) {
+            System.out.println("JsonDataManager: Error saving orders - " + e.getMessage());
             e.printStackTrace();
         }
     }

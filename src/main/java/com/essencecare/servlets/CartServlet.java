@@ -1,20 +1,35 @@
 package com.essencecare.servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.essencecare.models.CartItem;
 import com.essencecare.models.Product;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+@WebServlet("/essence-care/api/cart/*")
 public class CartServlet extends HttpServlet {
+    private static CartServlet instance;
     private static final Gson gson = new Gson();
-    private static final Map<String, List<CartItem>> userCarts = new HashMap<>();
+    private final Map<String, List<CartItem>> userCarts = new HashMap<>();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        instance = this;
+    }
+
+    public static CartServlet getInstance() {
+        return instance;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,7 +46,7 @@ public class CartServlet extends HttpServlet {
         }
 
         String userEmail = (String) session.getAttribute("user");
-        List<CartItem> cart = userCarts.getOrDefault(userEmail, new ArrayList<>());
+        List<CartItem> cart = getUserCart(userEmail);
         out.print(gson.toJson(cart));
         out.flush();
     }
@@ -43,17 +58,37 @@ public class CartServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
+        System.out.println("CartServlet: Received POST request");
+        System.out.println("CartServlet: Request URI: " + request.getRequestURI());
+
         HttpSession session = request.getSession(false);
+        System.out.println("CartServlet: Session: " + (session != null ? session.getId() : "null"));
+        
         if (session == null || session.getAttribute("user") == null) {
+            System.out.println("CartServlet: User not authenticated");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print(gson.toJson("User not authenticated"));
             return;
         }
 
         String userEmail = (String) session.getAttribute("user");
-        Map<String, Object> requestData = gson.fromJson(request.getReader(), Map.class);
+        System.out.println("CartServlet: User email: " + userEmail);
+
+        // Log request body
+        StringBuilder requestBody = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                requestBody.append(line);
+            }
+        }
+        System.out.println("CartServlet: Request body: " + requestBody.toString());
+
+        Map<String, Object> requestData = gson.fromJson(requestBody.toString(), new TypeToken<Map<String, Object>>(){}.getType());
+        System.out.println("CartServlet: Parsed request data: " + gson.toJson(requestData));
         
         if (requestData == null || requestData.get("id") == null) {
+            System.out.println("CartServlet: Invalid product data");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.print(gson.toJson("Invalid product data"));
             return;
@@ -62,36 +97,61 @@ public class CartServlet extends HttpServlet {
         try {
             // Get the complete product data from ProductServlet
             Long productId = ((Double) requestData.get("id")).longValue();
-            Product product = ProductServlet.getProductById(productId);
+            System.out.println("CartServlet: Looking for product with ID: " + productId);
+            
+            Product product = ProductServlet.getInstance().getProductById(productId);
+            System.out.println("CartServlet: Found product: " + (product != null ? gson.toJson(product) : "null"));
             
             if (product == null) {
+                System.out.println("CartServlet: Product not found");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.print(gson.toJson("Product not found"));
                 return;
             }
 
             List<CartItem> cart = userCarts.computeIfAbsent(userEmail, k -> new ArrayList<>());
+            System.out.println("CartServlet: Current cart size: " + cart.size());
+            System.out.println("CartServlet: Current cart items: " + gson.toJson(cart));
             
+            // Get quantity from request, default to 1 if not provided
+            int quantity = 1;
+            if (requestData.get("quantity") != null) {
+                quantity = ((Double) requestData.get("quantity")).intValue();
+            }
+            System.out.println("CartServlet: Adding quantity: " + quantity);
+
             // Check if product already exists in cart
             Optional<CartItem> existingItem = cart.stream()
                     .filter(item -> item.getProduct().getId().equals(product.getId()))
                     .findFirst();
 
             if (existingItem.isPresent()) {
-                // Increment quantity if product already exists
-                existingItem.get().setQuantity(existingItem.get().getQuantity() + 1);
+                // Add the new quantity to existing quantity
+                int newQuantity = existingItem.get().getQuantity() + quantity;
+                System.out.println("CartServlet: Updating existing item quantity from " + existingItem.get().getQuantity() + " to " + newQuantity);
+                existingItem.get().setQuantity(newQuantity);
             } else {
-                // Add new item if product doesn't exist
+                // Add new item with specified quantity
                 CartItem newItem = new CartItem();
                 newItem.setProduct(product);
-                newItem.setQuantity(1);
+                newItem.setQuantity(quantity);
                 cart.add(newItem);
+                System.out.println("CartServlet: Added new item to cart");
             }
 
+            System.out.println("CartServlet: Final cart size: " + cart.size());
+            System.out.println("CartServlet: Final cart items: " + gson.toJson(cart));
             out.print(gson.toJson(cart));
         } catch (ClassCastException e) {
+            System.out.println("CartServlet: Error - " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.print(gson.toJson("Invalid product ID format"));
+        } catch (Exception e) {
+            System.out.println("CartServlet: Unexpected error - " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(gson.toJson("An unexpected error occurred"));
         }
         out.flush();
     }
@@ -121,7 +181,7 @@ public class CartServlet extends HttpServlet {
 
         try {
             Long productId = Long.parseLong(pathInfo.substring(1));
-            Map<String, Object> requestBody = gson.fromJson(request.getReader(), Map.class);
+            Map<String, Object> requestBody = gson.fromJson(request.getReader(), new TypeToken<Map<String, Object>>(){}.getType());
             
             if (requestBody == null || requestBody.get("quantity") == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -206,5 +266,13 @@ public class CartServlet extends HttpServlet {
             out.print(gson.toJson("Invalid product ID format"));
         }
         out.flush();
+    }
+
+    public List<CartItem> getUserCart(String userEmail) {
+        return userCarts.getOrDefault(userEmail, new ArrayList<>());
+    }
+
+    public void clearUserCart(String userEmail) {
+        userCarts.remove(userEmail);
     }
 } 
