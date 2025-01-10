@@ -11,6 +11,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 public class JsonDataManager {
     private static final Gson gson = new Gson();
@@ -21,7 +23,62 @@ public class JsonDataManager {
         servletContext = context;
     }
 
-    public static List<Product> loadProducts() {
+    // Product Management Methods
+    public List<Product> getAllProducts() {
+        System.out.println("JsonDataManager: Getting all products");
+        return loadProducts();
+    }
+
+    public void addProduct(Product product) {
+        System.out.println("JsonDataManager: Adding new product");
+        List<Product> products = loadProducts();
+        products.add(product);
+        saveProducts(products);
+    }
+
+    public void updateProduct(Product updatedProduct) {
+        System.out.println("JsonDataManager: Updating product with ID: " + updatedProduct.getId());
+        List<Product> products = loadProducts();
+        products = products.stream()
+            .map(p -> p.getId().equals(updatedProduct.getId()) ? updatedProduct : p)
+            .collect(Collectors.toList());
+        saveProducts(products);
+    }
+
+    public void deleteProduct(String productId) {
+        System.out.println("JsonDataManager: Deleting product with ID: " + productId);
+        List<Product> products = loadProducts();
+        products = products.stream()
+            .filter(p -> !p.getId().toString().equals(productId))
+            .collect(Collectors.toList());
+        saveProducts(products);
+    }
+
+    public List<Product> searchProducts(String query) {
+        System.out.println("JsonDataManager: Searching products with query: " + query);
+        return loadProducts().stream()
+            .filter(p -> p.getName().toLowerCase().contains(query.toLowerCase()) ||
+                        p.getDescription().toLowerCase().contains(query.toLowerCase()))
+            .collect(Collectors.toList());
+    }
+
+    private void saveProducts(List<Product> products) {
+        System.out.println("JsonDataManager: Saving products");
+        try {
+            String filePath = servletContext.getRealPath("/WEB-INF/classes/data/products.json");
+            System.out.println("JsonDataManager: Writing to file: " + filePath);
+            
+            try (FileWriter writer = new FileWriter(filePath)) {
+                gson.toJson(new ProductList(products), writer);
+                System.out.println("JsonDataManager: Successfully saved products");
+            }
+        } catch (Exception e) {
+            System.out.println("JsonDataManager: Error saving products - " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static List<Product> loadProducts() {
         System.out.println("JsonDataManager: Loading products");
         try {
             String filePath = "/WEB-INF/classes/data/products.json";
@@ -52,8 +109,13 @@ public class JsonDataManager {
         }
     }
 
+    // Helper class for JSON structure
     private static class ProductList {
         List<Product> products;
+
+        ProductList(List<Product> products) {
+            this.products = products;
+        }
     }
 
     public static List<User> loadUsers() {
@@ -74,8 +136,20 @@ public class JsonDataManager {
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                Type userListType = new TypeToken<List<User>>(){}.getType();
-                List<User> users = gson.fromJson(reader, userListType);
+                String content = reader.lines().collect(Collectors.joining());
+                List<User> users;
+                
+                // Try parsing as direct list first
+                try {
+                    Type listType = new TypeToken<List<User>>(){}.getType();
+                    users = gson.fromJson(content, listType);
+                } catch (Exception e) {
+                    // If that fails, try parsing as wrapped object
+                    Type wrappedType = new TypeToken<Map<String, List<User>>>(){}.getType();
+                    Map<String, List<User>> wrapped = gson.fromJson(content, wrappedType);
+                    users = wrapped.get("users");
+                }
+                
                 System.out.println("JsonDataManager: Successfully loaded users: " + 
                     (users != null ? users.size() : 0));
                 return users != null ? users : new ArrayList<>();
@@ -148,5 +222,18 @@ public class JsonDataManager {
             System.out.println("JsonDataManager: Error saving orders - " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public Long getNextProductId() {
+        List<Product> products = loadProducts();
+        if (products.isEmpty()) {
+            return 1L;
+        }
+        
+        // Find the highest existing ID and add 1
+        return products.stream()
+                .mapToLong(Product::getId)
+                .max()
+                .orElse(0L) + 1;
     }
 } 

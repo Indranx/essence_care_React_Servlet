@@ -1,3 +1,9 @@
-{
-  "users": []
-}
+[
+  {
+    "email": "admin@essencecare.com",
+    "password": "admin123",
+    "role": "ADMIN",
+    "fullName": "Admin User",
+    "address": "Admin Office"
+  }
+]

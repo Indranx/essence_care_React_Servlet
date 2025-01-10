@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class ProductServlet extends HttpServlet {
     private static ProductServlet instance;
     private static final Gson gson = new Gson();
+    private JsonDataManager jsonDataManager;
     private List<Product> products;
 
     @Override
@@ -26,6 +27,7 @@ public class ProductServlet extends HttpServlet {
         System.out.println("ProductServlet initialized");
         System.out.println("Context path: " + getServletContext().getContextPath());
         JsonDataManager.setServletContext(getServletContext());
+        jsonDataManager = new JsonDataManager();
         loadProducts();
     }
 
@@ -45,7 +47,7 @@ public class ProductServlet extends HttpServlet {
 
     private void loadProducts() {
         System.out.println("ProductServlet: Loading products from JsonDataManager");
-        products = JsonDataManager.loadProducts();
+        products = jsonDataManager.getAllProducts();
         if (products != null) {
             System.out.println("ProductServlet: Successfully loaded " + products.size() + " products");
             products.forEach(p -> System.out.println("Product: " + gson.toJson(p)));
@@ -64,7 +66,8 @@ public class ProductServlet extends HttpServlet {
 
         String pathInfo = request.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
-            // Add debug logging
+            // Reload products to ensure we have the latest data
+            loadProducts();
             System.out.println("Loading all products...");
             System.out.println("Number of products: " + products.size());
             out.print(gson.toJson(products));

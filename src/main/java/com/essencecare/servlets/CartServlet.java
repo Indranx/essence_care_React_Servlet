@@ -275,4 +275,10 @@ public class CartServlet extends HttpServlet {
     public void clearUserCart(String userEmail) {
         userCarts.remove(userEmail);
     }
+
+    public void removeProductFromAllCarts(String productId) {
+        userCarts.forEach((userEmail, cart) -> {
+            cart.removeIf(item -> item.getProduct().getId().equals(productId));
+        });
+    }
 } 

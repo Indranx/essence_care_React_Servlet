@@ -104,6 +104,7 @@ public class UserServlet extends HttpServlet {
                     // Create new session
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", user.getEmail());
+                    session.setAttribute("role", user.getRole());
                     session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
                     // Create a response object without sensitive data
@@ -111,9 +112,10 @@ public class UserServlet extends HttpServlet {
                     safeUser.setEmail(user.getEmail());
                     safeUser.setFullName(user.getFullName());
                     safeUser.setAddress(user.getAddress());
+                    safeUser.setRole(user.getRole());
 
                     out.print(gson.toJson(safeUser));
-                    System.out.println("Login successful");
+                    System.out.println("Login successful. Role set to: " + user.getRole());
                 } else {
                     System.out.println("Password mismatch");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -149,6 +151,9 @@ public class UserServlet extends HttpServlet {
             
             User newUser = gson.fromJson(requestBody.toString(), User.class);
             System.out.println("Parsed user: " + gson.toJson(newUser));
+
+            // Add default role for regular users
+            newUser.setRole("USER");
 
             if (users == null) {
                 users = new ArrayList<>();

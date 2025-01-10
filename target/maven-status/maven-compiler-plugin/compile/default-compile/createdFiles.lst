@@ -7,10 +7,13 @@ com\essencecare\servlets\CartServlet$2.class
 com\essencecare\utils\JsonDataManager$1.class
 com\essencecare\utils\JsonDataManager$3.class
 com\essencecare\models\Order.class
+com\essencecare\utils\JsonDataManager$4.class
 com\essencecare\servlets\OrderServlet.class
+com\essencecare\servlets\AdminServlet.class
 com\essencecare\servlets\OrderServlet$1.class
 com\essencecare\servlets\CartServlet$1.class
 com\essencecare\utils\JsonDataManager.class
+com\essencecare\filters\AdminFilter.class
 com\essencecare\utils\JsonDataManager$2.class
 com\essencecare\servlets\UserServlet.class
 com\essencecare\models\CartItem.class

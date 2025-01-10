@@ -7,6 +7,7 @@ public class Product {
     private double price;
     private String image;
     private String category;
+    private int stockQuantity;
 
     // Constructors
     public Product() {}
@@ -67,5 +68,13 @@ public class Product {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 } 
