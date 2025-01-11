@@ -6,6 +6,7 @@
       "description": "A powerful antioxidant serum that helps brighten skin and reduce signs of aging.",
       "price": 159.9,
       "category": "skincare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1723951174326-2a97221d3b7f?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -14,6 +15,7 @@
       "description": "Deeply hydrating moisturizer that plumps and softens skin.",
       "price": 129.9,
       "category": "skincare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1600180583258-6d9b0c7b782b?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -22,6 +24,7 @@
       "description": "Nourishing hair serum that adds shine and reduces frizz.",
       "price": 89.9,
       "category": "haircare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1667242003572-96caaf8ac5c4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -30,6 +33,7 @@
       "description": "Balancing serum that helps control oil and minimize pores.",
       "price": 119.9,
       "category": "skincare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1703335093128-2989445b88fa?q=80&w=1854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -38,6 +42,7 @@
       "description": "Rich and creamy body moisturizer for deep hydration.",
       "price": 79.9,
       "category": "bodycare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1703174323653-0455deaf7f11?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -46,6 +51,7 @@
       "description": "Gentle, alcohol-free toner that soothes and refreshes skin.",
       "price": 89.9,
       "category": "skincare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1626897844971-aef92643f056?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -54,6 +60,7 @@
       "description": "Intensive treatment that strengthens and repairs damaged hair.",
       "price": 109.9,
       "category": "haircare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=2056&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -62,6 +69,7 @@
       "description": "Exfoliating scrub that smooths and brightens skin.",
       "price": 69.9,
       "category": "bodycare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1677769237703-629d082d89bb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -70,6 +78,7 @@
       "description": "Strengthening shampoo that promotes healthy hair growth.",
       "price": 99.9,
       "category": "haircare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1593560368921-9b9fd9e5841f?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -78,6 +87,7 @@
       "description": "Nourishing hand cream that protects and moisturizes.",
       "price": 69.9,
       "category": "bodycare",
+      "stockQuantity": 100,
       "image": "https://images.unsplash.com/photo-1556229162-5c63ed9c4efb?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     }
   ]

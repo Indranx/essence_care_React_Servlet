@@ -14,9 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @WebServlet("/api/admin/*")
@@ -42,54 +42,60 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        //String pathInfo = request.getPathInfo();
         
         try {
-            // Parse pagination parameters
-            int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
-            int pageSize = Integer.parseInt(request.getParameter("pageSize") != null ? request.getParameter("pageSize") : "10");
-            String sortBy = request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "name";
-            String sortOrder = request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "asc";
-            String filterCategory = request.getParameter("category");
-            String searchQuery = request.getParameter("search");
+            String pathInfo = request.getPathInfo();
+            
+            if (pathInfo != null && pathInfo.equals("/products")) {
+                // Get pagination and sorting parameters
+                int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
+                int pageSize = Integer.parseInt(request.getParameter("pageSize") != null ? request.getParameter("pageSize") : "10");
+                String sortBy = request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "name";
+                String sortOrder = request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "asc";
+                String category = request.getParameter("category");
 
-            List<Product> products = jsonDataManager.getAllProducts();
+                List<Product> products = jsonDataManager.getAllProducts();
 
-            // Apply filters
-            if (filterCategory != null && !filterCategory.isEmpty()) {
+                // Apply category filter
+                if (category != null && !category.equals("all")) {
+                    products = products.stream()
+                        .filter(p -> p.getCategory().equals(category))
+                        .collect(Collectors.toList());
+                }
+
+                // Apply sorting
+                Comparator<Product> comparator = switch (sortBy) {
+                    case "id" -> Comparator.comparingLong(p -> Long.parseLong(p.getId().toString()));
+                    case "price" -> Comparator.comparing(Product::getPrice);
+                    case "category" -> Comparator.comparing(Product::getCategory);
+                    case "name" -> Comparator.comparing(Product::getName);
+                    default -> Comparator.comparingLong(p -> Long.parseLong(p.getId().toString())); // Default to ID sorting
+                };
+
+                // Always sort in ascending order
                 products = products.stream()
-                    .filter(p -> p.getCategory().equalsIgnoreCase(filterCategory))
+                    .sorted(comparator)
                     .collect(Collectors.toList());
+
+                // Apply pagination
+                int totalProducts = products.size();
+                int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+                int start = (page - 1) * pageSize;
+                int end = Math.min(start + pageSize, totalProducts);
+
+                List<Product> paginatedProducts = products.subList(start, end);
+
+                JsonObject jsonResponse = new JsonObject();
+                jsonResponse.add("products", gson.toJsonTree(paginatedProducts));
+                jsonResponse.addProperty("totalPages", totalPages);
+                jsonResponse.addProperty("currentPage", page);
+                jsonResponse.addProperty("totalProducts", totalProducts);
+
+                out.print(gson.toJson(jsonResponse));
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(gson.toJson("Invalid endpoint"));
             }
-
-            // Apply search
-            if (searchQuery != null && !searchQuery.isEmpty()) {
-                products = products.stream()
-                    .filter(p -> p.getName().toLowerCase().contains(searchQuery.toLowerCase()) ||
-                                p.getDescription().toLowerCase().contains(searchQuery.toLowerCase()))
-                    .collect(Collectors.toList());
-            }
-
-            // Apply sorting
-            products = sortProducts(products, sortBy, sortOrder);
-
-            // Apply pagination
-            int totalProducts = products.size();
-            int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-            int start = (page - 1) * pageSize;
-            int end = Math.min(start + pageSize, totalProducts);
-
-            List<Product> paginatedProducts = products.subList(start, end);
-
-            // Create response object
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.add("products", gson.toJsonTree(paginatedProducts));
-            jsonResponse.addProperty("totalPages", totalPages);
-            jsonResponse.addProperty("currentPage", page);
-            jsonResponse.addProperty("totalProducts", totalProducts);
-
-            out.print(gson.toJson(jsonResponse));
-
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print(gson.toJson("Error: " + e.getMessage()));
@@ -102,28 +108,34 @@ public class AdminServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         
         try {
-            Product newProduct = gson.fromJson(request.getReader(), Product.class);
+            String pathInfo = request.getPathInfo();
             
-            // Validate product
-            String validationError = validateProduct(newProduct);
-            if (validationError != null) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson("Validation error: " + validationError));
-                return;
-            }
+            if (pathInfo != null && pathInfo.equals("/products")) {
+                Product newProduct = gson.fromJson(request.getReader(), Product.class);
+                
+                // Validate product
+                String validationError = validateProduct(newProduct);
+                if (validationError != null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(gson.toJson("Validation error: " + validationError));
+                    return;
+                }
 
-            // Generate sequential ID
-            newProduct.setId(jsonDataManager.getNextProductId());
-            
-            // Save product
-            jsonDataManager.addProduct(newProduct);
-            
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            out.print(gson.toJson(newProduct));
-            
+                // Set sequential ID
+                newProduct.setId(jsonDataManager.getNextProductId());
+                
+                // Save product
+                jsonDataManager.addProduct(newProduct);
+                
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                out.print(gson.toJson(newProduct));
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(gson.toJson("Invalid endpoint"));
+            }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(gson.toJson("Error adding product: " + e.getMessage()));
+            out.print(gson.toJson("Error: " + e.getMessage()));
         }
     }
 
@@ -133,46 +145,29 @@ public class AdminServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         
         try {
-            // Get the ID from the path
-            String pathId = request.getPathInfo().substring(1);
-            Long productId = Long.parseLong(pathId);
-            
-            // Parse the updated product from request body
-            Product updatedProduct = gson.fromJson(request.getReader(), Product.class);
-            
-            // Force the ID to match the path parameter
-            updatedProduct.setId(productId);
-            
-            // Validate product
-            String validationError = validateProduct(updatedProduct);
-            if (validationError != null) {
+            String pathInfo = request.getPathInfo();
+            if (pathInfo != null && pathInfo.startsWith("/products/")) {
+                Long productId = Long.parseLong(pathInfo.substring("/products/".length()));
+                Product updatedProduct = gson.fromJson(request.getReader(), Product.class);
+                updatedProduct.setId(productId);
+
+                // Validate product
+                String validationError = validateProduct(updatedProduct);
+                if (validationError != null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(gson.toJson("Validation error: " + validationError));
+                    return;
+                }
+
+                jsonDataManager.updateProduct(updatedProduct);
+                out.print(gson.toJson(updatedProduct));
+            } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson("Validation error: " + validationError));
-                return;
+                out.print(gson.toJson("Invalid endpoint"));
             }
-
-            // Check if product exists
-            List<Product> products = jsonDataManager.getAllProducts();
-            boolean productExists = products.stream()
-                    .anyMatch(p -> p.getId().equals(productId));
-
-            if (!productExists) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(gson.toJson("Product not found with ID: " + productId));
-                return;
-            }
-
-            // Update product
-            jsonDataManager.updateProduct(updatedProduct);
-            
-            out.print(gson.toJson(updatedProduct));
-            
-        } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print(gson.toJson("Invalid product ID format"));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(gson.toJson("Error updating product: " + e.getMessage()));
+            out.print(gson.toJson("Error: " + e.getMessage()));
         }
     }
 
@@ -182,19 +177,18 @@ public class AdminServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         
         try {
-            String productId = request.getPathInfo().substring(1);
-            System.out.println("AdminServlet: Attempting to delete product with ID: " + productId);
-            
-            // Delete product directly without cart manipulation
-            jsonDataManager.deleteProduct(productId);
-            
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            System.out.println("AdminServlet: Successfully deleted product with ID: " + productId);
-            
+            String pathInfo = request.getPathInfo();
+            if (pathInfo != null && pathInfo.startsWith("/products/")) {
+                String productId = pathInfo.substring("/products/".length());
+                jsonDataManager.deleteProduct(productId);
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(gson.toJson("Invalid endpoint"));
+            }
         } catch (Exception e) {
-            System.out.println("AdminServlet: Error deleting product - " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(gson.toJson("Error deleting product: " + e.getMessage()));
+            out.print(gson.toJson("Error: " + e.getMessage()));
         }
     }
 
@@ -205,7 +199,7 @@ public class AdminServlet extends HttpServlet {
         if (product.getDescription() == null || product.getDescription().trim().isEmpty()) {
             return "Description is required";
         }
-        if (product.getPrice() <= 0) {
+        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             return "Price must be greater than 0";
         }
         if (product.getStockQuantity() < 0) {
@@ -214,25 +208,7 @@ public class AdminServlet extends HttpServlet {
         if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
             return "Category is required";
         }
-        if (product.getImage() == null || product.getImage().trim().isEmpty()) {
-            return "Image URL is required";
-        }
         return null;
     }
 
-    private List<Product> sortProducts(List<Product> products, String sortBy, String sortOrder) {
-        Comparator<Product> comparator = switch (sortBy.toLowerCase()) {
-            case "price" -> Comparator.comparing(Product::getPrice);
-            case "stock" -> Comparator.comparing(Product::getStockQuantity);
-            default -> Comparator.comparing(Product::getName);
-        };
-
-        if (sortOrder.equalsIgnoreCase("desc")) {
-            comparator = comparator.reversed();
-        }
-
-        return products.stream()
-            .sorted(comparator)
-            .collect(Collectors.toList());
-    }
 } 

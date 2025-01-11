@@ -77,7 +77,7 @@ public class OrderServlet extends HttpServlet {
 
             // Calculate total
             double total = cartItems.stream()
-                    .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                    .mapToDouble(item -> item.getProduct().getPrice().doubleValue() * item.getQuantity())
                     .sum();
 
             // Create new order

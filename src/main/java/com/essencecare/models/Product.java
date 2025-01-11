@@ -1,13 +1,16 @@
 package com.essencecare.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class Product {
     private Long id;
     private String name;
     private String description;
-    private double price;
-    private String image;
+    private BigDecimal price;
+    private Integer stockQuantity = 0;
     private String category;
-    private int stockQuantity;
+    private String image;
 
     // Constructors
     public Product() {}
@@ -16,7 +19,7 @@ public class Product {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.price = price;
+        this.price = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP);
         this.image = image;
         this.category = category;
     }
@@ -46,12 +49,12 @@ public class Product {
         this.description = description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPrice(BigDecimal price) {
+        this.price = price.setScale(2, RoundingMode.HALF_UP);
     }
 
     public String getImage() {

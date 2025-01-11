@@ -8,38 +8,31 @@ import java.io.IOException;
 public class CORSFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Do nothing
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         // Add debug logging
-        System.out.println("Incoming request: " + request.getMethod() + " " + request.getRequestURI());
-        System.out.println("Context Path: " + request.getContextPath());
-        System.out.println("Servlet Path: " + request.getServletPath());
+        System.out.println("CORS Filter: " + httpRequest.getMethod() + " " + httpRequest.getRequestURI());
 
-        // Set CORS headers
-        response.addHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
-        response.addHeader("Access-Control-Max-Age", "3600");
-        
-        // Handle preflight requests
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            chain.doFilter(request, response);
+        httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With");
+        httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+        httpResponse.setHeader("Access-Control-Max-Age", "3600");
+
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            httpResponse.setStatus(HttpServletResponse.SC_OK);
+            return;
         }
+
+        chain.doFilter(request, response);
     }
 
     @Override
-    public void destroy() {
-        // Do nothing
-    }
+    public void init(FilterConfig filterConfig) throws ServletException {}
+
+    @Override
+    public void destroy() {}
 } 
